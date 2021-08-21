@@ -1,23 +1,25 @@
-﻿using GenericRest.Concrats;
-using GenericRest.Domain;
+﻿using GenericRest.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 
 namespace GenericRest
 {
     class Program
     {
-        static void Main(string[] args)
+        private static RestClientService client = new RestClientService();
+        static async Task Main(string[] args)
         {
-    
-            var client = new RestClientService("https://viacep.com.br");
-
-            var response = client.ExecuteAsync<CEP>("/ws/01001000/json/", null, RestSharp.Method.GET).Result;
+            var response = await GetCep("https://viacep.com.br", "03927050");
 
             Console.WriteLine(JsonConvert.SerializeObject(response));
             Console.ReadKey();
 
+        }
+        private static async Task<CEP> GetCep(string url, string cep)
+        {
+            return await client.ExecuteAsync<CEP>(url, $"/ws/{cep}/json/", null, RestSharp.Method.GET);
         }
     }
 }
